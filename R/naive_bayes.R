@@ -1,16 +1,24 @@
-# FUNC train.naive.bayes(data, fact)
-#
-# data - ramka danych zawierajaca liczby
-# fact - faktor zawierajacy poprawna klasyfikacje
-# tekstow nalezacych do data
-# p    - stala m-estymacji (-1 oznacza wykorzystanie
-# wartosci domyslnej zaleznej od rozmiaru danych
-# uczacych)
-#
-# RETURN obiekt klasy mcTmnb do uzycia w funkcji predict
-#
+#' Function fit.nb implements model building algorithm of Naive Bayes
+#'
+#' Bernoulli model is equivalent to the binary independence model, which generates an indicator
+#' for each term of the vocabulary, either 1 indicatingpresence of the term in the document or 0 indicating absence.
+#' (we're using bernoulli distribution for conditional probabilities p(F|c) calculation )
+#' More information about algorithm can be found in the book Introduction to Information Retrieval (p.253-265)
+#'
+#' @param data data.frame contains values of our training set
+#' @param fact  Factor categories list pointing the right classification of the data (one per sample)
+#' @param p m-estimation constrant
+#'
+#' @return object klasy mcTbnb do uzycia w funkcji predict
+#'
+#' @examples
+#' fit.nb(train.data, label)
+#' fit.nb(train.data, label, p=5)
+#'
+#' @export
 fit.nb <- function(data, fact, p=-1) {
-	data = sign(data); # Zamiana na wartosci binarne
+  #only binary data is allowed
+	data = sign(data);
 
 	lvl <- levels(fact);
 	CN  <- length(lvl);

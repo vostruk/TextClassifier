@@ -1,12 +1,12 @@
 Package: MOWTextClassification
 Type: Package
-Title: Package for classifying text using articles dataset
+Title: Package for classifying text using Abstracts dataset http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+Abstracts+1990-2003
 Version: 0.1.0
 Date: 2017-01-10
 Author: Volodymyr Ostruk
 Maintainer: Volodymyr Ostruk <V.Ostruk@stud.elka.pw.edu.pl>
 Description: Package created for the purposes of MOW class at Warsaw University
-    of Technology.
+    of Technology in year 2017
 License: FREEBSD
 LazyData: TRUE
 RoxygenNote: 5.0.1

@@ -37,7 +37,7 @@ vectorize.data <- function(df, min.n=500, invalid.cats.hash=emptyenv(), min.w=2)
   rows.vector <- integer(0);
   cats.vector <- character(0);
 
-  # Pierszy wiersz ma specjalne znaczenie
+  # first row is different (statistics)
   N = nrow(df);
 
   for(i in 2:N){
@@ -51,8 +51,7 @@ vectorize.data <- function(df, min.n=500, invalid.cats.hash=emptyenv(), min.w=2)
     }
   }
 
-  # Usuwamy te slow ktore wystepuja w zbyt malej liczbie
-  #
+  # remove words that are not frequent
   words.count  <- integer(max.words.index);
   for(wi in 1:max.words.index) {
     cat(sprintf('II Faza: Kolumna %d / %d\t\t\t\r', wi, max.words.index));
@@ -70,24 +69,6 @@ vectorize.data <- function(df, min.n=500, invalid.cats.hash=emptyenv(), min.w=2)
               rows.indexes=rows.vector,
               org.classes=df[rows.vector,used.columns]));
 }
-
-# FUNC make.df.binary(df)
-#
-# funkcja zamienia ramke danych zawierajaca liczby
-# na ramke zawierajaco 0 i 1 (dla liczb >= 0)
-#
-make.df.binary <- function(df) {
-  for(i in 1:ncol(df)) {
-    df[,i] <- sign(df[,i]);
-  }
-  return(df);
-}
-
-
-
-
-
-
 
 # FUNC is.column.name(s)
 #

@@ -2,6 +2,7 @@
 #'
 #' Bernoulli model is equivalent to the binary independence model, which generates an indicator
 #' for each term of the vocabulary, either 1 indicatingpresence of the term in the document or 0 indicating absence.
+#' (we're using bernoulli distribution for conditional probabilities p(F|c) calculation )
 #' More information about algorithm can be found in the book Introduction to Information Retrieval (p.253-265)
 #'
 #' @param data data.frame contains values of our training set
