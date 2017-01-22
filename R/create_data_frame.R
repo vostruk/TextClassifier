@@ -1,41 +1,17 @@
-#
-# Funkcje zawarte w pliku odpowiadaja za przeksztalcenie
-# zbioru strzeszczen postaci (FieldOfApp, Abstract)
-# na format *bag of words*.
-# W wyniku tego przeksztalcenia zbior plikow txt
-# zostanie zamieniony na ramke danych o nastepujacym formacie
-# * Wiersz o idenksie 1 zawiera LACZNA liczbe wystapien slow
-#   oraz klas we wszystkich przetwarzanych dokumentach
-# * Nastepne wiersze odpowiadaja kolejnym przetwarzanym plikom
-#   streszczen
-# Pierwsze N kolumn ramki danych o nazwach zaczynajacych sie od
-# 'w.' odpowiada czestosciom wystepowania poszczegolnych slow w danym
-# dokumencie. Kolejne kolumny rozpoczynajace sie do 'c.' zawieraja
-# w komorkach 0 lub 1 okreslajace czy dany dokument nalezy do
-# klasy reprezentowanej przez kolumne. Ostatnie kolumny o nazwach
-# rozpoczynajacych sie od 'meta.' zawieraja dodatkowe informacje
-# np. nazwe pliku (umozliwiajaca wyswietlenie jego zawartosci uzyt-
-# kownikowi)
-#
-# Przyklad (dla slow word1, word2 i word3 oraz dla klas class1 i class2)
-#
-# | w.word1 | w.word2 | w.word3 | c.class1 | c.class2 | meta.filename |
-# | 2       | 3       | 7       | 2        | 0        | NA            |
-# | 1       | 2       | 3       | 1        | 0        | file1.txt     |
-# | 1       | 1       | 4       | 1        | 0        | file2.txt     |
-#
 
+Sys.setlocale(category="LC_ALL", locale="C");
+library('Rstem');
 
-#####################################
-####################################
-#' funkcja przeksztalca katalog zawierajcy przetworzone wstepnie
-#' artykuly na pojedynczy plik zgody z formatem *data frame* jezyka R
+#' Function create.articles.data.frame creates dataframe from preprocesses files lokated in one directory
+#'
+#' Files should have flat structure and should have format returned by preprocess function from the package
 #'
 #' @param input.path string directory with preprocessed files
-#' @param output.path string parametr okresla nazwe(lokalizacje) pliku ramki
-#' @return output.path string
+#' @param output.path string parametr is the name (location+name) where the dataframe should be saved
+#'
 #' @examples
 #' create.articles.data.frame("C:\\Users\\vostruk001\\Projects\\Studia\\MOW\\Projekt\\MOW_PROJEKT\\prepr\\", "C:\\Users\\vostruk001\\Projects\\Studia\\MOW\\Projekt\\MOW_PROJEKT\\data\\")
+#'
 #' @export
 create.articles.data.frame <- function(articles.directory, output.df.filename) {
   init.stop.words.dictionary();
@@ -49,20 +25,10 @@ create.articles.data.frame <- function(articles.directory, output.df.filename) {
 
   close(df.file);
 }
-
-
-
-# zeby uchronic sie od wplywu jezyka na sposob sortowania napisow
-# ustawiamy locale na C
 Sys.setlocale(category="LC_ALL", locale="C");
 
-library('Rstem');
 
-# FUNC read.all.lines(file.name)
-#
-# funkcja wczytuje i zwraca wszystkie linie
-# z pliku tekstowego o podanej nazwie
-#
+# given the filename function reads and returns all its lines
 read.all.lines <- function(file.name) {
 	handle <- file(file.name, "rt");
 	lines  <- readLines(handle);
@@ -71,26 +37,17 @@ read.all.lines <- function(file.name) {
 	return(lines);
 }
 
-# FUNC get.article.categories(category.line)
-#
-# funkcja zwraca wektor kategorii
-# na podstawie lancucha znakow postaci
-# "class1, class2, class3"
-#
+
+# function returns vector of categories given the string of categories
 get.article.categories <- function(category.line) {
 	category.vector <- strsplit(category.line, "[ \t]*,[ \t]*");
 	return( category.vector[[1]] );
 }
 
-# FUNC read.preprocessed.article(file.name)
-#
-# funkcja odpowiada za wczytanie wstepnie przetworzonego
-# pliku artykulu (opis przetworzonego pliku patrz: preprocess.r)
-# artykul zwracany jest w postaci listy zawierajacej pola
-# $abstract - streszczenie artykulu, oraz $classes - wektor
-# klas do ktorych dany artykol nalezy.
-# w przypadku bledy zwracana jest wartosc NA
-#
+
+# given filename function reads preprocessed file and
+# returns the list with $abstract (text) and $classes (categories)
+# returns NA if something went wrong
 read.preprocessed.article <- function(file.name) {
 	lines <- read.all.lines(file.name);
 	if( length(lines) != 3 ) {
@@ -104,16 +61,8 @@ read.preprocessed.article <- function(file.name) {
 }
 
 
-# FUNC stem.abstract.text(abstract.text)
-#
-# funkcja odpowiada za wykonanie opisanego w
-# dokumentacji wstepenej przetwarzania tekstu
-# na ktore sklada sie:
-# * zamiana duzych liter na male
-# * usniecie znakow nie bedacych literami
-# * dokonanie stemmingu algorytmem Portera
-# funkcja zwraca wektor slow
-#
+#function preprocess text including lowercasing all words, removing non-literal symbols,
+#stemming using Porter algorithm, function returns words vector
 stem.abstract.text <- function(abstract.text) {
 	abstract.text <- gsub("[^A-Za-z]+", " ", abstract.text);
 	abstract.text <- tolower(abstract.text);
@@ -136,29 +85,17 @@ stem.abstract.text <- function(abstract.text) {
 	return(wordStem(abstract.text, language="english"));
 }
 
-# --------------------------------------------------
 
-# FUNC remove.stop.words(text)
-#
-# funkcja usuwa z angielskiego tekstu znaki bedace
-# tzw. stop words a wiec np. 'the', 'you'
-#
-# tekst jest reprezentowany jako wektor slow
-# np. remove.stop.words(c("one", "two", "three"))
-#
-remove.stop.words <- function(text) {
-	return( text[!is.stop.word(text)] );
+
+#function removes English stop words (like the, you etc) from the words vector
+
+remove.stop.words <- function(wordsVector) {
+	return( wordsVector[!is.stop.word(wordsVector)] );
 }
 
 
-# FUNC load.article(file.name)
-#
-# funkcja wczytuje artykul i zwraca
-# liste zawierajaca $abstract - wektor
-# slow ze streszczenia poddanych stemmingowi oraz
-# usuwaniu stopwords, $categories - wektor napisow
-# okreslajacych poszczegolne kategorie arytkulu
-#
+#function reads the article and returns list of two vectors: $abstract word vector after stemming
+# and $categories vector of the labels (categories) for that abstract
 load.article <- function(file.name) {
 	art <- read.preprocessed.article(file.name);
 
@@ -170,13 +107,9 @@ load.article <- function(file.name) {
 	return( list(abstract=abstract, categories=categories) );
 }
 
-# FUNC insert.words(env, words)
-#
-# funkcja dodaje slowa z wektora words do slownika
-# (environment) env
-# przy okazji env[word] zawiera liczbe wystapien danego
-# slowa w przetwarzanych teskstach
-#
+
+#function adds words from wordsWector to the dictionary env (to create df later)
+# env[word] contains number of times word occures in all texts
 insert.words <- function(env, words) {
 	for(w in words) {
 		if(!exists(w, envir=env)) {
@@ -190,17 +123,8 @@ insert.words <- function(env, words) {
 
 
 
-
-# FUNC compute.global.stats(articles.directory)
-#
-# funkcja przebiega po wszystkich plikach wstepnie
-# przetworzonych artykulow i buduje liste uzywanych
-# w artach slow oraz kategorii. podane listy zawieraja
-# slowa i kategorie ze wszystkich przejrzanych plikow.
-# funkcja zwraca liste z atrybutami $words - slownik uzywanych
-# slow, $categories - slownik uzywanych kategorii
-# $files.count - liczba przetworzonych plikow
-#
+# function counts how many times each word occures in the corpus (for ex. can be useful for tf-idf)
+# returning $words - words vocabulary $categories - categories vocabulary, $files.count - number of files preprocessed
 compute.global.stats <- function(articles.directory) {
 	words 	 <- new.env(hash=TRUE, parent=emptyenv());
 	categories <- new.env(hash=TRUE, parent=emptyenv());
@@ -225,16 +149,9 @@ compute.global.stats <- function(articles.directory) {
 	return( list(count=count, words=words, categories=categories) );
 }
 
-# META COLUMNS - dodatkowe kolumny ktore dodajemy do
-# data frame'u
 META.COLUMNS <- c('filename', 'wordcount');
 
-
-# FUNC add.df.header(df.file, art.stats)
-#
-# funkcja zapisuje do pliku df.file nazwy kolumn
-# dataframe'u na podstawie art.stats
-#
+# function writes to the files column names of the dataframe
 add.df.header <- function(df.file, art.stats) {
 	word.col.names <- paste('w.', sort(ls(envir=art.stats$words)), sep='');
 	cats.col.names <- paste('c.', sort(ls(envir=art.stats$categories)), sep='');
@@ -247,8 +164,6 @@ add.df.header <- function(df.file, art.stats) {
 }
 
 
-# FUNC write.env.cols(env, file)
-#
 write.env.cols <- function(envir, file) {
 	col.names <- sort(ls(envir=envir));
 
@@ -259,13 +174,7 @@ write.env.cols <- function(envir, file) {
 	}
 }
 
-# FUNC add.df.stats.row(df.file, art.stats)
-#
-# funkcja dodaje pierwszy wiersz do data frame'u
-# pierwszy wiersz zawiera statystyki dotyczace
-# calego zbioru artow np. ilosc wystapien danego slowa
-# we wszystkich artach razem wzietych
-#
+# function adds first row with statistics of text corpus to the dataframe
 add.df.stats.row <- function(df.file, art.stats) {
 	write.env.cols(art.stats$words, df.file);
 	write.env.cols(art.stats$categories, df.file);
@@ -276,29 +185,24 @@ add.df.stats.row <- function(df.file, art.stats) {
 	cat('na\n', file=df.file, sep='');
 }
 
-# FUNC write.art.row.cols(aenv, genv, file)
-#
+
 write.art.row.cols <- function(aenv, genv, file) {
 	col.names <- sort(ls(envir=genv));
 
 	for(c in col.names) {
 		if( exists(c, envir=aenv, inherits=FALSE) ) {
 			tmp <- get(c, envir=aenv);
-			cat(tmp, file=file, sep='');
+
 		}
 		else {
-			cat('0', file=file, sep='');
+
 		}
 
-		cat('\t', file=file, sep='');
 	}
 }
 
-# FUNC add.article.row(art, stats, file)
-#
-# funkcja odpowiada za dodanie wiersza danych odpowiadajacych
-# pojedynczemu plikowi artykulu
-#
+
+# function adds data row of words from one source file
 add.article.row <- function(art, stats, file) {
 	art.env <- new.env(hash=TRUE, parent=emptyenv());
 	insert.words(art.env, art$abstract);
@@ -309,16 +213,9 @@ add.article.row <- function(art, stats, file) {
 	write.art.row.cols(art.env, stats$words, file);
 	write.art.row.cols(category.env, stats$categories, file);
 
-	# specjalne kolumny
-	cat(sprintf('"%s"\t', art$file.name), file=file, sep='');
-	cat(sprintf('%d\n', length(art$abstract)), file=file, sep='');
 }
 
-# FUNC add.article.rows(file, articles.directory)
-#
-# funkcja odpowiada za dodanie wierszy reprezentujacych
-# poszczegolne artykuly do dataframe'u
-#
+# function adds rows representing particular articles to dataframe
 add.article.rows <- function(art.stats, file, articles.directory) {
 	articles <- list.files(
 		path=articles.directory,
@@ -329,34 +226,12 @@ add.article.rows <- function(art.stats, file, articles.directory) {
 
 	for(a in articles) {
 		tmp <- load.article(a);
-		tmp$file.name <- a; # dodaj info o nazwie pliku
-		cat(sprintf('Adding row: %s\n', a));
-
+		tmp$file.name <- a;
 		add.article.row(tmp, art.stats, file);
 	}
 }
 
 
-
-######################################################
-######################################################
-######################################################
-
-
-
-# stopwords.r
-#
-# plik zawiera procedure odpowiedzialna
-# za odrzucenie tak zwanych ,,stop words''
-#
-# lista slow pochodzi ze strony:
-# http://norm.al/2009/04/14/list-of-english-stop-words/
-#
-# !mc
-
-# TODO: moze warto przezucic to do osobnego pliku
-# i wczytywac przy initialize...
-#
 
 STOP.WORDS.VECTOR <- c(
   "a", "about", "above", "above", "across", "after",
@@ -403,15 +278,6 @@ STOP.WORDS.VECTOR <- c(
 
 STOP.WORDS.ENV <- NA;
 
-
-
-# FUNC init.stop.words.dictionary()
-#
-# funkcja inicjalizuje tablice haszujaca za pomoca wektora
-# STOP.WORDS.VECTOR
-# uzycie tablicy haszujacej pozwoli pszyspieszyc proces
-# wyszukiwania stopwords
-#
 init.stop.words.dictionary <- function() {
   STOP.WORDS.ENV <<- new.env(hash=TRUE, parent=emptyenv(), size=length(STOP.WORDS.VECTOR));
 
@@ -420,14 +286,6 @@ init.stop.words.dictionary <- function() {
   }
 }
 
-# FUNC is.stop.word(word)
-#
-# funkcja sprawdza czy podane slowo znajduje
-# sie na liscie stop words
-# fix: z powodu uzycia funkcji przy operajach indeksowania
-# np. words[ !is.stop.word(words) ]
-# musi ona poprawnie obslugiwac rowniez wektory slow
-#
 is.stop.word <- function(word) {
   return(
     sapply(word, function(w) exists(w, envir=STOP.WORDS.ENV, inherits=FALSE))

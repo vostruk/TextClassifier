@@ -47,21 +47,19 @@ fit.nb <- function(data, fact, p=-1) {
 	return(model);
 }
 
-# FUNC predict.mcNb(model, data)
-#
-# Rozszerzenie funkcji generycznej predict.
-# Obiekt model musi byc lista zawierajaca
-# dwa pola $prior $condprob bedace odpowiednio
-# wektorem oraz macierza.
-# data musi zawierac dane niezbene do klasyfikacji
-# (data MUSI zawierac miec IDENTYCZNA strukture co
-# dane uzyte przy nauce klasyfikatora)
-#
-# RETURN macierz ktora dla kazdego wiersza danych zwraca
-# wiersz okreslajacy p-stwo przynaleznosci do danej ktegorii
-# Kolumny sa uporzadkowoane zgodnie z porzadkiem leveli  faktora
-# zwracanym przez levels
-#
+
+#' Function predict.mcNb extends generic function predict for Naive Bayes model
+#'
+#'
+#' @param model list containing two fields $prior and $condprob which are vector and matrix
+#' @param data data.frame contains values of our testing set (identical structure that was use in training set for building model)
+#'
+#' @return result matrix where for each sample from data set probabilities of each class are given
+#'
+#' @examples
+#' predict.mcNb(model, data)
+#'
+#' @export
 predict.mcNb <- function(model, data) {
 	data <- sign(as.matrix(data));
 
@@ -74,8 +72,6 @@ predict.mcNb <- function(model, data) {
 	log.prior <- log(model$prior);
 
 	for(r in 1:N) {
-		cat(sprintf("Wiersz %d/%d\t\t\r", r, N));
-
 		for(c in 1:CN) {
 			tmp <- log.cp[c];
 			tmp <- tmp +
@@ -83,8 +79,7 @@ predict.mcNb <- function(model, data) {
 			result[r, c] <- tmp;
 		}
 	}
-
-	cat('\n');
+  result <- apply(result, 1, function(r) which(r==max(r)))
 	return(result);
 }
 

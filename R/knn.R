@@ -31,7 +31,7 @@ fit.knn <- function(data, fact, k=3, metric=metric.cos) {
 #' @return result vector where for each sample from data set assigned category is returned
 #'
 #' @examples
-#' predict.nb.bernoulli(model, data)
+#' predict(model, data)
 #'
 #' @export
 predict.ptmKnn <- function(model, data) {
@@ -91,7 +91,6 @@ knn.simple <- function(data, fact, test.data, metric, k=5) {
   result <- character(N);
 
   for(r in 1:N) {
-    cat(sprintf('Sample %d/%d\t\t\r', r, N));
     test.row <- test.data[r, ];
 
     dists <- rep(0, nrow(data));
@@ -108,7 +107,6 @@ knn.simple <- function(data, fact, test.data, metric, k=5) {
   }
 
   tmp <- factor(result, lvl);
-  cat('\n');
   return(tmp);
 }
 

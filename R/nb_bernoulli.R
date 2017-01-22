@@ -27,7 +27,6 @@ fit.nb.bernoulli <-
   #1.1 number of all records
   N <- nrow(data);
   for(c in 1:class.count) {
-    cat(sprintf("\nClass %s:\n", lvl[c]));
   #1.2 number of samples of particular class
     Nc <- sum(fact == lvl[c]);
   #1.3 Apriori probability for the class
@@ -35,15 +34,12 @@ fit.nb.bernoulli <-
 
   #2. Now calculating conditional probabilities
     for(t in 1:words.count) {
-      cat(sprintf("\tWord: %d\t\t\r", t));
-      flush(stdout());
   #2.1 Calculating conditional probabilities of each class
       Nct <- sum(data[,t] > 0 & fact == lvl[c]);
       condprob[t, c] <- (Nct + 1) / (Nc + 2);
     }
   }
 
-  cat('\n');
   l <- list(prior=prior,condprob=condprob);
   class(l) <- 'mcTbnb';
   return(l);
@@ -67,10 +63,10 @@ predict.mcTbnb <-
   result <- matrix(nrow=nrow(data), ncol=ncol(model$condprob));
 
   for(c in 1:ncol(model$condprob)) {
-    cat(sprintf("\nClass nr %d:\n", c));
+    #cat(sprintf("\nClass nr %d:\n", c));
     for(i in 1:nrow(data)) {
-      cat(sprintf("\tSample: %d\t\t\r", i));
-      flush(stdout());
+      #cat(sprintf("\tSample: %d\t\t\r", i));
+      #flush(stdout());
 
       tmp <- log( model$prior[c] );
       tmp <- tmp + sum(
@@ -80,7 +76,7 @@ predict.mcTbnb <-
       result[i, c] <- tmp;
     }
   }
-
+  result <- apply(result, 1, function(r) which(r==max(r)));
   return(result);
 }
 

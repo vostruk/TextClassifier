@@ -41,14 +41,12 @@ preprocess <- function(input.path, output.path) {
 flatten.files.structure <- function(input.folders.path, flattened.files.folder.path) {
 
   dir.create(flattened.files.folder.path, showWarnings = FALSE)
-  cat('Copying all files to one directory...\n');
 
   input.folders.path <- append.slash(input.folders.path);
   flattened.files.folder.path <- append.slash(flattened.files.folder.path);
 
   flist  <- list.files(input.folders.path, recursive=TRUE, pattern='*.txt', full.names=TRUE);
   for(f in flist) {
-    cat(sprintf("Copy file %s\n", f));
 
     new.name <- paste(flattened.files.folder.path, basename(f), sep='');
     file.copy(f, new.name, overwrite=TRUE);
@@ -171,7 +169,6 @@ extract.information <- function(lines) {
 	field.of.app <- extract.field.of.application(lines);
 	abstract <- extract.abstract(lines);
 
-	# cat(field.of.app);
 	return(c(field.of.app, "", abstract));
 }
 
@@ -201,7 +198,6 @@ is.valid.article.description <- function(lines, N=30) {
 # FUNC preprocess.article(full.input.path, full.output.path)
 #
 preprocess.article <- function(full.input.path, full.output.path)  {
-	cat(sprintf("[%s]", full.input.path));
 
 	handle <- file(full.input.path, "rt");
 	lines  <- readLines(handle);
@@ -217,5 +213,4 @@ preprocess.article <- function(full.input.path, full.output.path)  {
 	else {
 		cat(': Invalid content');
 	}
-	cat('\n');
 }

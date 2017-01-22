@@ -26,15 +26,12 @@ fit.nb.multinomial <- function(data, fact) {
 
   N <- nrow(data);
   for(c in 1:class.count) {
-    cat(sprintf("\nClass %s:\n", lvl[c]));
     Nc <- sum(fact == lvl[c]); # number of samples of c
     prior[c] <- Nc / N;
 
     tmp.df <- data[which(fact == lvl[c]),];
     S <- words.count + sum(tmp.df);
     for(t in 1:words.count) {
-      cat(sprintf("\tColumn: %d\t\t\r", t));
-      flush(stdout());
 
       tmp <- data[, t];
       condprob[t, c] <-
@@ -42,7 +39,6 @@ fit.nb.multinomial <- function(data, fact) {
     }
   }
 
-  cat('\n');
   l <- list(prior=prior,condprob=condprob);
   class(l) <- 'mcTmnb';
   return(l);
@@ -65,10 +61,7 @@ predict.mcTmnb <- function(model, data) {
   result <- matrix(nrow=nrow(data), ncol=ncol(model$condprob));
 
   for(c in 1:ncol(model$condprob)) {
-    cat(sprintf("\nClass nr %d:\n", c));
     for(i in 1:nrow(data)) {
-      cat(sprintf("\tSample: %d\t\t\r", i));
-      flush(stdout());
 
         tmp <- log( model$prior[c] );
         tmp <- tmp + sum(
@@ -78,7 +71,7 @@ predict.mcTmnb <- function(model, data) {
       result[i, c] <- tmp;
     }
   }
-
+  result <- apply(result, 1, function(r) which(r==max(r)))
   return(result);
 }
 
@@ -102,9 +95,6 @@ predict.mcTmnb.v2 <- function(model, data) {
   log.condprob <- log(model$condprob);
 
   for(i in 1:nrow(data)) {
-    cat(sprintf("Sample: %d\t\t\r", i));
-    flush(stdout());
-
     d <- data[i, ];
     for(c in 1:ncol(model$condprob)) {
       tmp <- log.prior[c];
@@ -116,6 +106,6 @@ predict.mcTmnb.v2 <- function(model, data) {
     }
   }
 
-  cat('\n');
+  result <- apply(result, 1, function(r) which(r==max(r)));
   return(result);
 }
