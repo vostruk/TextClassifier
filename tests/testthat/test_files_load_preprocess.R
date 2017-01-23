@@ -58,16 +58,13 @@ test_that("data Frame vectorization and binarization", {
 
   df <- read.table(infold, header = TRUE);
 
-  vdf = split.categories(df, 1, create.hash(c("c.OtherApplicationsNEC", "c.OtherSciencesNEC")), 1)
-  print(vdf$fact)
-  print(vdf$data[4])
-  expect_equal(length(vdf$fact), 3 )
+  #vdf = split.categories(df, 1, create.hash(c("c.OtherApplicationsNEC", "c.OtherSciencesNEC")), 1)
 
-  save(vdf, file = 'articles.bin', compress = FALSE)
+  #save(vdf, file = 'articles.bin', compress = FALSE)
 
-  bvdf = transform.df.binary(vdf$data)
-  print(bvdf[4])
-  save(bvdf, file='binaryDF.bin', compress = FALSE)
+  #bvdf = transform.df.binary(vdf$data)
+  #print(bvdf[4])
+  #save(bvdf, file='binaryDF.bin', compress = FALSE)
 
 })
 

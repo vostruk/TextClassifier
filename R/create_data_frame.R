@@ -67,15 +67,9 @@ stem.abstract.text <- function(abstract.text) {
 	abstract.text <- gsub("[^A-Za-z]+", " ", abstract.text);
 	abstract.text <- tolower(abstract.text);
 
-	# dzielimy tekst na poszczegolne slowa
-	# wynik jest zwracany w postaci listy wektorow
 	abstract.text <- strsplit(abstract.text, "[ \t]+");
 	abstract.text <- abstract.text[[1]];
 
-	# stemujemy poszczegolne slowa
-	# wordStem obsluguje slowa do dlugosci 255
-	# dluzsze usuwamy, dodatkowo podczas splitu
-	# moga pojawic sie napis o 0 dlugosci
 	MAX.WORD.LENGTH <- 255;
 	abstract.text   <- abstract.text[
 		nchar(abstract.text) < MAX.WORD.LENGTH &  # NIE MOZE BYC &&

@@ -6,7 +6,7 @@ Date: 2017-01-10
 Author: Volodymyr Ostruk
 Maintainer: Volodymyr Ostruk <V.Ostruk@stud.elka.pw.edu.pl>
 Description: Package created for the purposes of MOW class at Warsaw University
-    of Technology in year 2017
-License: FREEBSD
+    of Technology in year 2017.
+License: GPL-2
 LazyData: TRUE
 RoxygenNote: 5.0.1
